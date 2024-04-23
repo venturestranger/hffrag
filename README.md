@@ -22,7 +22,7 @@ The `rag.py` file implements several components:
 
 ## 1. Indexer
 
-The `Indexer` class implements an indexer for RAG approach. It allows you to add paragraphs from various sources, such as text, documents, or URLs, and provides methods for retrieving information about specific paragraphs and searching for the most similar paragraphs.
+The `Indexer` class implements an indexer for RAG approach. It allows you to add paragraphs from various sources, such as text, documents, or URLs, and provides methods for retrieving information about specific paragraphs and searching for the most similar ones.
 
 ### Usage
 
