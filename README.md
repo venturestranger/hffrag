@@ -43,15 +43,17 @@ indexer.add(content="Paragraph 1\nParagraph 2\nParagraph 3", label="Document 1")
 indexer.add(doc="path/to/document.txt", label="Document 2")
 indexer.add(url="https://example.com", label="Web Document")
 
-# Retrieve information about a specific paragraph, returns a tuple(label, paragraph)
-paragraph_id = 0
-info = indexer.retrieve(paragraph_id)
-print(info)
-
 # Search for the most similar paragraphs, returns ids
 query = "Query paragraph"
 similar_paragraphs = indexer.search(query, top=2)
 print(similar_paragraphs)
+# >> [0, 1]
+
+# Retrieve information about a specific paragraph, returns a tuple(label, paragraph)
+paragraph_id = 0
+info = indexer.retrieve(paragraph_id)
+print(info)
+# >> ('Document 1', 'Paragraph 1')
 ```
 
 ## 2. Templater
