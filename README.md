@@ -62,7 +62,7 @@ The `Templater` class implements templates for querying LLMs. It provides an int
 
 ## 3. Driver
 
-The `Driver` implements an interface to initialize connection with an LLM (hosted with `Ollama`) and query the model in a number of ways:
+The `Driver` implements an interface to initialize connection with an LLM (powered with `Ollama`) and query the model in a number of ways:
 
 ```python
 from hffrag import Templater, Driver
