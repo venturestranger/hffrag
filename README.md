@@ -18,7 +18,7 @@ pip install -r ./requirements.txt
 
 ---
 
-The `rag.py` file implements several components:
+The `hffrag` implements several components:
 
 ## 1. Indexer
 
