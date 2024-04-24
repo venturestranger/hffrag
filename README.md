@@ -58,4 +58,30 @@ print(info)
 
 ## 2. Templater
 
-## 3. LLMDriver
+The `Templater` class implements templates for querying LLMs. It provides an interface to wrap around specified prompt details as well as to build system and human messages to query LLMs.
+
+## 3. Driver
+
+The `Driver` implements an interface to initialize connection with an LLM (hosted with `Ollama`) and query the model in a number of ways:
+
+```python
+from rag import Templater, Driver
+from config import DriverConfig
+
+temp = Templater([
+	('system', 'You are a {specialization}'),
+	('system', 'You are a told to say a few words about your job'),
+	('human', 'What do you do?')
+])
+
+llm = Driver(DriverConfig())
+
+# querying LLM using a templater
+print(llm.query(template=temp, specialization='IT engineer'))
+
+# querying LLM using just the prompt
+print(llm.query('What do you do'))
+
+# querying LLM using just the prompt (it will ignore the template)
+print(llm.query('What do you do', template=temp))
+```  
