@@ -1,8 +1,8 @@
 from sentence_transformers import SentenceTransformer
 from sentence_transformers import util
-from utils import get_random_name
+from .utils import get_random_name
 from bs4 import BeautifulSoup
-from config import IndexerConfig, DriverConfig
+from .config import IndexerConfig, DriverConfig
 import numpy as np
 import requests
 import faiss
@@ -10,8 +10,12 @@ import faiss
 
 # implements RAG indexer
 class Indexer:
-	def __init__(self, config: IndexerConfig):
-		self.config = config
+	def __init__(self, config: IndexerConfig = None):
+		if config == None:
+			self.config = IndexerConfig()
+		else:
+			self.config = config
+
 		self.model = SentenceTransformer(self.config.EMBEDDING_MODEL)
 		emb = self.model.encode('hello world', precision=self.config.PRECISION)
 
@@ -69,14 +73,17 @@ class Templater:
 
 		for msg in msgs:
 			if msg[0] == 'system':
-				self.system += msg[1]
+				self.system += msg[1] + '\n'
 			else:
-				self.prompt += msg[1]
+				self.prompt += msg[1] + '\n'
 
 
 class Driver:
-	def __init__(self, config: DriverConfig):
-		self.config = config
+	def __init__(self, config: DriverConfig = None):
+		if config == None:
+			self.config = DriverConfig()
+		else:
+			self.config = config
 	
 	# if __prompt is specified, it queries llm with just __prompt, ignoring the template
 	# otherwise it uses the specified template and substitutes template arguments with **kargs
