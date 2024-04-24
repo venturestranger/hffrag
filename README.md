@@ -85,3 +85,49 @@ print(llm.query('What do you do'))
 # querying LLM using just the prompt (it will ignore the template)
 print(llm.query('What do you do', template=temp))
 ```  
+
+## Example
+
+```python
+from rag import Templater, Driver, Indexer
+from config import DriverConfig
+
+
+# initialize retriever
+doc = """
+IT engineers are the backbone of the technological world, ensuring the smooth operation and functionality of computer systems, networks, and applications. Their responsibilities encompass a wide range of tasks, from designing and implementing new systems to troubleshooting technical problems and keeping everything up-to-date.
+
+Writers are the architects of the written word. They wield language as their tool, crafting stories, poems, articles, scripts, and countless other forms of creative expression. Their work entertains, informs, educates, and inspires, shaping our understanding of the world and ourselves.
+"""
+
+index = Indexer()
+index.add(doc, label='career_path')
+
+
+# initialize a template
+template = Templater([
+	('system', 'You are a {specialization}'),
+	('system', 'You are a told to say a few words about your job relying on the following information: {information}'),
+	('human', 'What do you do?')
+])
+
+
+# retrieve information about the specified specialization
+specialization = 'IT engineer'
+information = index.retrieve(index.search('IT engineer', top=1)[0])[1]
+
+
+# intialize LLM
+driver_config = DriverConfig()
+driver_config.LLM_MODEL = 'mistral:7b-instruct'
+
+llm = Driver(driver_config)
+
+
+# query LLM
+print(llm.query(template=template, specialization=specialization, information=information))
+```
+Output
+```
+As an IT engineer, I play a crucial role in the technological world by maintaining and enhancing the functionality of computer systems, networks, and applications. My job involves a diverse range of tasks, from designing and implementing new systems to troubleshooting technical problems and keeping up-to-date with the latest technologies. I work behind the scenes to ensure that the technology infrastructure is running smoothly and efficiently, enabling businesses and organizations to operate effectively. My goal is to prevent technical issues before they occur and to quickly resolve any problems that do arise, minimizing downtime and maximizing productivity.
+```
