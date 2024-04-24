@@ -86,7 +86,7 @@ print(llm.query('What do you do'))
 print(llm.query('What do you do', template=temp))
 ```  
 
-## Example
+## Example of Usage
 
 ```python
 from hffrag import Templater, Driver, Indexer
