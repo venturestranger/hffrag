@@ -29,11 +29,11 @@ The `Indexer` class implements an indexer for RAG approach. It allows you to add
 Here's how you can use the `Indexer` class:
 
 ```python
-from config import Config
-from indexer import Indexer
+from hffrag import Indexer
+from hffrag.config import IndexerConfig
 
 # Create a configuration object
-config = Config()
+config = IndexerConfig()
 
 # Initialize the Indexer
 indexer = Indexer(config)
@@ -65,8 +65,8 @@ The `Templater` class implements templates for querying LLMs. It provides an int
 The `Driver` implements an interface to initialize connection with an LLM (hosted with `Ollama`) and query the model in a number of ways:
 
 ```python
-from rag import Templater, Driver
-from config import DriverConfig
+from hffrag import Templater, Driver
+from hffrag.config import DriverConfig
 
 temp = Templater([
 	('system', 'You are a {specialization}'),
@@ -89,8 +89,8 @@ print(llm.query('What do you do', template=temp))
 ## Example
 
 ```python
-from rag import Templater, Driver, Indexer
-from config import DriverConfig
+from hffrag import Templater, Driver, Indexer
+from hffrag.config import DriverConfig
 
 
 # initialize retriever
