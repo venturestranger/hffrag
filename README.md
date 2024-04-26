@@ -107,7 +107,7 @@ index.add(doc, label='career_path')
 # initialize a template
 template = Templater([
 	('system', 'You are a {specialization}'),
-	('system', 'You are a told to say a few words about your job relying on the following information: {information}'),
+	('system', 'You are told to say a few words about your job relying on the following information: {information}'),
 	('human', 'What do you do?')
 ])
 
