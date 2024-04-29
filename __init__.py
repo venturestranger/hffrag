@@ -10,13 +10,17 @@ import faiss
 
 # implements RAG indexer
 class Indexer:
-	def __init__(self, config: IndexerConfig = None):
+	def __init__(self, config: IndexerConfig = None, embedding: SentenceTransformer = None):
 		if config == None:
 			self.config = IndexerConfig()
 		else:
 			self.config = config
 
-		self.model = SentenceTransformer(self.config.EMBEDDING_MODEL)
+		if embedding != None:
+			self.model = embedding
+		else:
+			self.model = SentenceTransformer(self.config.EMBEDDING_MODEL)
+
 		emb = self.model.encode('hello world', precision=self.config.PRECISION)
 
 		self.index = faiss.IndexFlatL2(emb.shape[0])
@@ -43,13 +47,13 @@ class Indexer:
 			with open(filename) as file:
 				soup = BeautifulSoup(file.read(), 'html.parser')
 
-				for line in soup.get_text().split('\n'):
+				for line in soup.get_text()[:self.config.DOC_MAX_LENGTH].split('\n'):
 					if len(line) > self.config.MIN_PARAGRAPH_LENGTH:
 						self.index.add(self.model.encode([line.strip()], precision=self.config.PRECISION))
 						self.store.append((label, line))
 
 		if content != None:
-			for line in content.split('\n'):
+			for line in content[:self.config.DOC_MAX_LENGTH].split('\n'):
 				if len(line) > self.config.MIN_PARAGRAPH_LENGTH:
 					self.index.add(self.model.encode([line.strip()], precision=self.config.PRECISION))
 					self.store.append((label, line))
@@ -111,4 +115,31 @@ class Driver:
 		resp = requests.post(self.config.LLM_BASE_URL, json=params)
 
 		content = resp.json()['response']
+		return content
+	
+	# asynchronous query requests
+	async def aquery(self, __prompt:str = None, template: Templater = None, async_requests = None, **kargs):
+		system = None
+		prompt = None
+
+		if template != None and __prompt == None:
+			system = template.system.format(**kargs)
+
+		if template != None and __prompt == None:
+			prompt = template.prompt.format(**kargs)
+		else:
+			prompt = __prompt
+
+		params = {
+			'model': self.config.LLM_MODEL,
+			'prompt': prompt,
+			'stream': False
+		}
+
+		if system != None:
+			params.update({'system': system})
+
+		resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
+
+		content = (await resp.json())['response']
 		return content
