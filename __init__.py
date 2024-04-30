@@ -34,10 +34,10 @@ class Indexer:
 
 		if doc != None:
 			with open(doc, 'r') as file:
-				for line in file:
-					if len(line) > self.config.MIN_PARAGRAPH_LENGTH:
-						self.index.add(self.model.encode([line.strip()], precision=self.config.PRECISION))
-						self.store.append((label, line))
+				data = list(filter(lambda x: len(x) > self.config.MIN_PARAGRAPH_LENGTH, file.read()[:self.config.DOC_MAX_LENGTH].split('\n')))
+				self.store.extend(zip([label for i in range(len(data))], data))
+
+				self.index.add(self.model.encode(data, precision=self.config.PRECISION))
 
 		if url != None:
 			filename = self.config.TMP_PATH + get_random_name()
@@ -47,16 +47,16 @@ class Indexer:
 			with open(filename) as file:
 				soup = BeautifulSoup(file.read(), 'html.parser')
 
-				for line in soup.get_text()[:self.config.DOC_MAX_LENGTH].split('\n'):
-					if len(line) > self.config.MIN_PARAGRAPH_LENGTH:
-						self.index.add(self.model.encode([line.strip()], precision=self.config.PRECISION))
-						self.store.append((label, line))
+				data = list(filter(lambda x: len(x) > self.config.MIN_PARAGRAPH_LENGTH, soup.get_text()[:self.config.DOC_MAX_LENGTH].split('\n')))
+				self.store.extend(zip([label for i in range(len(data))], data))
+
+				self.index.add(self.model.encode(data, precision=self.config.PRECISION))
 
 		if content != None:
-			for line in content[:self.config.DOC_MAX_LENGTH].split('\n'):
-				if len(line) > self.config.MIN_PARAGRAPH_LENGTH:
-					self.index.add(self.model.encode([line.strip()], precision=self.config.PRECISION))
-					self.store.append((label, line))
+			data = list(filter(lambda x: len(x) > self.config.MIN_PARAGRAPH_LENGTH, content[:self.config.DOC_MAX_LENGTH].split('\n')))
+			self.store.extend(zip([label for i in range(len(data))], data))
+
+			self.index.add(self.model.encode(data, precision=self.config.PRECISION))
 				
 	# retrieve information about a specific paragraph
 	def retrieve(self, id: int) -> tuple:
