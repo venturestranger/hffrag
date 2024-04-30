@@ -86,6 +86,16 @@ print(llm.query('What do you do'))
 print(llm.query('What do you do', template=temp))
 ```  
 
+### Asynchronous querying
+
+You can also use the command below, but only if there is `async_requests` specified.
+`async_requests` should implement an http client, attributing async `.post(url, json=data)` method
+that returns an arbitrary response instance. The response object (from which the response instance was originated) should contain async `.json()` method that yields a parsed body content:
+
+```python
+output = await llm.aquery('What do you do', template=temp, async_requests=async_requests)
+```
+
 ## Example of Usage
 
 ```python
