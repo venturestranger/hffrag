@@ -91,7 +91,7 @@ class Driver:
 	
 	# if __prompt is specified, it queries llm with just __prompt, ignoring the template
 	# otherwise it uses the specified template and substitutes template arguments with **kargs
-	def query(self, __prompt:str = None, template: Templater = None, **kargs):
+	def query(self, __prompt: str = None, template: Templater = None, base_url: str = None, **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -112,13 +112,16 @@ class Driver:
 		if system != None:
 			params.update({'system': system})
 
-		resp = requests.post(self.config.LLM_BASE_URL, json=params)
+		if base_url != None:
+			resp = requests.post(base_url, json=params)
+		else:
+			resp = requests.post(self.config.LLM_BASE_URL, json=params)
 
 		content = resp.json()['response']
 		return content
 	
 	# asynchronous query requests
-	async def aquery(self, __prompt:str = None, template: Templater = None, async_requests = None, **kargs):
+	async def aquery(self, __prompt: str = None, template: Templater = None, base_url: str = None, async_requests = None, **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -139,7 +142,10 @@ class Driver:
 		if system != None:
 			params.update({'system': system})
 
-		resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
+		if base_url != None:
+			resp = await async_requests.post(base_url, json=params)
+		else:
+			resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
 
 		content = (await resp.json())['response']
 		return content
