@@ -96,6 +96,15 @@ that returns an arbitrary response instance. The response object (from which the
 output = await llm.aquery('What do you do', template=temp, async_requests=async_requests)
 ```
 
+### Querying with enabled streaming
+
+You can also use `.squery(...)` method for prompting an LLM. In this case, it will stream generated tokens in real-time:
+
+```python
+for output in llm.squery('What do you do', template=temp):
+	print(output)
+```
+
 ## Example of Usage
 
 ```python
@@ -139,5 +148,5 @@ print(llm.query(template=template, specialization=specialization, information=in
 ```
 Output
 ```
-As an IT engineer, I play a crucial role in the technological world by maintaining and enhancing the functionality of computer systems, networks, and applications. My job involves a diverse range of tasks, from designing and implementing new systems to troubleshooting technical problems and keeping up-to-date with the latest technologies. I work behind the scenes to ensure that the technology infrastructure is running smoothly and efficiently, enabling businesses and organizations to operate effectively. My goal is to prevent technical issues before they occur and to quickly resolve any problems that do arise, minimizing downtime and maximizing productivity.
+{"response": "As an IT engineer, I play a crucial role in the technological world by maintaining and enhancing the functionality of computer systems, networks, and applications. My job involves a diverse range of tasks, from designing and implementing new systems to troubleshooting technical problems and keeping up-to-date with the latest technologies. I work behind the scenes to ensure that the technology infrastructure is running smoothly and efficiently, enabling businesses and organizations to operate effectively. My goal is to prevent technical issues before they occur and to quickly resolve any problems that do arise, minimizing downtime and maximizing productivity.", "done": true}
 ```
