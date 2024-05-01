@@ -146,7 +146,10 @@ llm = Driver(driver_config)
 # query LLM
 print(llm.query(template=template, specialization=specialization, information=information))
 ```
-Output
-```
+
+### Output
+The output is a json document, containing fields `response` (string) and `done` (boolean). The `response` field carries generated tokens. The `done` field returns whether generation is finished.
+
+```json
 {"response": "As an IT engineer, I play a crucial role in the technological world by maintaining and enhancing the functionality of computer systems, networks, and applications. My job involves a diverse range of tasks, from designing and implementing new systems to troubleshooting technical problems and keeping up-to-date with the latest technologies. I work behind the scenes to ensure that the technology infrastructure is running smoothly and efficiently, enabling businesses and organizations to operate effectively. My goal is to prevent technical issues before they occur and to quickly resolve any problems that do arise, minimizing downtime and maximizing productivity.", "done": true}
 ```
