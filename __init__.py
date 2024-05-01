@@ -119,7 +119,7 @@ class Driver:
 			resp = requests.post(self.config.LLM_BASE_URL, json=params)
 
 		content = resp.json()['response']
-		return json.dumps({'response': content, 'done': True})
+		return json.dumps({'response': content, 'done': True}, ensure_ascii=False)
 	
 	# stream query requests
 	def squery(self, __prompt: str = None, template: Templater = None, base_url: str = None, **kargs) -> str:
@@ -150,7 +150,7 @@ class Driver:
 
 		for data in resp.iter_lines():
 			parsed = json.loads(data)
-			yield json.dumps({'response': parsed['response'], 'done': parsed['done']})
+			yield json.dumps({'response': parsed['response'], 'done': parsed['done']}, ensure_ascii=False)
 	
 	# asynchronous query requests
 	async def aquery(self, __prompt: str = None, template: Templater = None, base_url: str = None, async_requests = None, **kargs) -> str:
@@ -180,4 +180,4 @@ class Driver:
 			resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
 
 		content = (await resp.json())['response']
-		return json.dumps({'response': content, 'done': True})
+		return json.dumps({'response': content, 'done': True}, ensure_ascii=False)
