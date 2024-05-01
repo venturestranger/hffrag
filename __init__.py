@@ -6,6 +6,7 @@ from .config import IndexerConfig, DriverConfig
 import numpy as np
 import requests
 import faiss
+import json
 
 
 # implements RAG indexer
@@ -118,7 +119,38 @@ class Driver:
 			resp = requests.post(self.config.LLM_BASE_URL, json=params)
 
 		content = resp.json()['response']
-		return content
+		return json.dumps({'response': content, 'done': True})
+	
+	# stream query requests
+	def squery(self, __prompt: str = None, template: Templater = None, base_url: str = None, **kargs) -> str:
+		system = None
+		prompt = None
+
+		if template != None and __prompt == None:
+			system = template.system.format(**kargs)
+
+		if template != None and __prompt == None:
+			prompt = template.prompt.format(**kargs)
+		else:
+			prompt = __prompt
+
+		params = {
+			'model': self.config.LLM_MODEL,
+			'prompt': prompt,
+			'stream': True
+		}
+
+		if system != None:
+			params.update({'system': system})
+
+		if base_url != None:
+			resp = requests.post(base_url, json=params, stream=True)
+		else:
+			resp = requests.post(self.config.LLM_BASE_URL, json=params, stream=True)
+
+		for data in resp.iter_lines():
+			parsed = json.loads(data)
+			yield json.dumps({'response': parsed['response'], 'done': parsed['done']})
 	
 	# asynchronous query requests
 	async def aquery(self, __prompt: str = None, template: Templater = None, base_url: str = None, async_requests = None, **kargs) -> str:
@@ -148,4 +180,4 @@ class Driver:
 			resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
 
 		content = (await resp.json())['response']
-		return content
+		return json.dumps({'response': content, 'done': True})
