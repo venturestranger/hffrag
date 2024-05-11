@@ -6,8 +6,8 @@ from .config import IndexerConfig, DriverConfig
 import numpy as np
 import requests
 import faiss
-import json
 import openai
+import json
 
 
 # implements RAG indexer
@@ -116,11 +116,11 @@ class Driver:
 
 		if llm_type == 'openai':
 			if url_token != None:
-				openai.api_key = url_token
+				api_key = url_token
 			else:
-				openai.api_key = self.config.OPENAI_TOKEN
+				api_key = self.config.OPENAI_TOKEN
 
-			response = openai.chat.completions.create(
+			response = (openai.OpenAI(api_key=api_key)).chat.completions.create(
 				model="gpt-3.5-turbo-16k",
 				messages=[
 					{
@@ -168,11 +168,11 @@ class Driver:
 
 		if llm_type == 'openai':
 			if url_token != None:
-				openai.api_key = url_token
+				api_key = url_token
 			else:
-				openai.api_key = self.config.OPENAI_TOKEN
+				api_key = self.config.OPENAI_TOKEN
 
-			response = openai.chat.completions.create(
+			response = (openai.OpenAI(api_key=api_key)).chat.completions.create(
 				model="gpt-3.5-turbo-16k",
 				messages=[
 					{
@@ -226,11 +226,11 @@ class Driver:
 
 		if llm_type == 'openai':
 			if url_token != None:
-				openai.api_key = url_token
+				api_key = url_token
 			else:
-				openai.api_key = self.config.OPENAI_TOKEN
+				api_key = self.config.OPENAI_TOKEN
 
-			response = await openai.chat.completions.create(
+			response = await (openai.AsyncOpenAI(api_key=api_key)).chat.completions.create(
 				model="gpt-3.5-turbo-16k",
 				messages=[
 					{
