@@ -29,7 +29,7 @@ class Indexer:
 		self.store = []
 	
 	# add paragraphs from a text (text separated with \n), a document (path to file locally), or url (uri to website)
-	def add(self, content:str = None, label:str = None, doc:str = None, url:str = None):
+	def add(self, content: str = None, label: str = None, doc: str = None, url: str = None):
 
 		if label == None:
 			label = 'undefined'
@@ -65,7 +65,7 @@ class Indexer:
 		return self.store[id]
 
 	# search for most similar paragraphs
-	def search(self, query: str, label:str = None, top:int = 5) -> list:
+	def search(self, query: str, label: str = None, top: int = 5) -> list:
 		_, ids = self.index.search(np.array([self.model.encode(query)]), top)
 
 		return ids[0].tolist()
@@ -93,7 +93,7 @@ class Driver:
 	
 	# if __prompt is specified, it queries llm with just __prompt, ignoring the template
 	# otherwise it uses the specified template and substitutes template arguments with **kargs
-	def query(self, __prompt: str = None, template: Templater = None, base_url: str = None, llm_type: str = 'local', token: str = None, **kargs) -> str:
+	def query(self, __prompt: str = None, template: Templater = None, url_token: str = None, llm_type: str = 'local', **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -115,8 +115,8 @@ class Driver:
 			params.update({'system': system})
 
 		if llm_type == 'openai':
-			if token != None:
-				openai.api_key = token
+			if url_token != None:
+				openai.api_key = url_token
 			else:
 				openai.api_key = self.config.OPENAI_TOKEN
 
@@ -136,8 +136,8 @@ class Driver:
 
 			return json.dumps({'response': response.choices[0].message.content, 'done': True}, ensure_ascii=False)
 		else:
-			if base_url != None:
-				resp = requests.post(base_url, json=params)
+			if url_token != None:
+				resp = requests.post(url_token, json=params)
 			else:
 				resp = requests.post(self.config.LLM_BASE_URL, json=params)
 
@@ -145,7 +145,7 @@ class Driver:
 			return json.dumps({'response': content, 'done': True}, ensure_ascii=False)
 	
 	# stream query requests
-	def squery(self, __prompt: str = None, template: Templater = None, base_url: str = None, llm_type: str = 'local', token: str = None, **kargs) -> str:
+	def squery(self, __prompt: str = None, template: Templater = None, url_token: str = None, llm_type: str = 'local', **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -167,8 +167,8 @@ class Driver:
 			params.update({'system': system})
 
 		if llm_type == 'openai':
-			if token != None:
-				openai.api_key = token
+			if url_token != None:
+				openai.api_key = url_token
 			else:
 				openai.api_key = self.config.OPENAI_TOKEN
 
@@ -193,8 +193,8 @@ class Driver:
 				else:
 					yield json.dumps({'response': chunk.choices[0].delta.content, 'done': False}, ensure_ascii=False)
 		else:
-			if base_url != None:
-				resp = requests.post(base_url, json=params, stream=True)
+			if url_token != None:
+				resp = requests.post(url_token, json=params, stream=True)
 			else:
 				resp = requests.post(self.config.LLM_BASE_URL, json=params, stream=True)
 
@@ -203,7 +203,7 @@ class Driver:
 				yield json.dumps({'response': parsed['response'], 'done': parsed['done']}, ensure_ascii=False)
 	
 	# asynchronous query requests
-	async def aquery(self, __prompt: str = None, template: Templater = None, base_url: str = None, async_requests = None, llm_type: str = 'local', token: str = None, **kargs) -> str:
+	async def aquery(self, __prompt: str = None, template: Templater = None, url_token: str = None, async_requests = None, llm_type: str = 'local', **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -225,8 +225,8 @@ class Driver:
 			params.update({'system': system})
 
 		if llm_type == 'openai':
-			if token != None:
-				openai.api_key = token
+			if url_token != None:
+				openai.api_key = url_token
 			else:
 				openai.api_key = self.config.OPENAI_TOKEN
 
@@ -246,8 +246,8 @@ class Driver:
 
 			return json.dumps({'response': response.choices[0].message.content, 'done': True}, ensure_ascii=False)
 		else:
-			if base_url != None:
-				resp = await async_requests.post(base_url, json=params)
+			if url_token != None:
+				resp = await async_requests.post(url_token, json=params)
 			else:
 				resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
 
