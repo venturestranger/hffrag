@@ -1,6 +1,6 @@
 # HFFRAG - RAG using HF (sentence transformers) and Faiss (similarity search library)
 
-The project implements RAG (Retrieval-Augmented Generation) and introduces several components for indexing documents, querying, finding the most similar ones, generating llm templates and outputs (using `ollama` software).
+The project implements RAG (Retrieval-Augmented Generation) and introduces several components for indexing documents, querying, finding the most similar ones, generating llm templates and outputs (using `Ollama` and `OpenAI`).
 
 ### Installation
 
@@ -104,6 +104,24 @@ You can also use `.squery(...)` method for prompting an LLM. In this case, it wi
 for output in llm.squery('What do you do', template=temp):
 	print(output)
 ```
+
+### Using a custom LLM endpoint 
+
+In case if you wish to request an arbitrary `Ollama` endpoint, assign a new url to your `url_token` field:
+
+```python
+output = llm.query('What do you do', url_token='http://localhost:11434/api/generate')
+```
+
+### Using OpenAI agents 
+
+To access `OpenAI` API and base your driver on some of their models, you should set `llm_type` to `openai` and `url_token` to your OpenAI API token:
+
+```python
+output = llm.query('What do you do', url_token='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', llm_type='openai')
+```
+
+OpenAI agents also work with for asynchronous queries and queries with enabled streaming.
 
 ## Example of Usage
 
