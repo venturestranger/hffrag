@@ -7,6 +7,7 @@ import numpy as np
 import requests
 import faiss
 import json
+import openai
 
 
 # implements RAG indexer
@@ -92,7 +93,7 @@ class Driver:
 	
 	# if __prompt is specified, it queries llm with just __prompt, ignoring the template
 	# otherwise it uses the specified template and substitutes template arguments with **kargs
-	def query(self, __prompt: str = None, template: Templater = None, base_url: str = None, **kargs) -> str:
+	def query(self, __prompt: str = None, template: Templater = None, base_url: str = None, llm_type: str = 'local', token: str = None, **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -113,16 +114,38 @@ class Driver:
 		if system != None:
 			params.update({'system': system})
 
-		if base_url != None:
-			resp = requests.post(base_url, json=params)
-		else:
-			resp = requests.post(self.config.LLM_BASE_URL, json=params)
+		if llm_type == 'openai':
+			if token != None:
+				openai.api_key = token
+			else:
+				openai.api_key = self.config.OPENAI_TOKEN
 
-		content = resp.json()['response']
-		return json.dumps({'response': content, 'done': True}, ensure_ascii=False)
+			response = openai.chat.completions.create(
+				model="gpt-3.5-turbo-16k",
+				messages=[
+					{
+						'role': 'system',
+						'content': 'Give short answer\n' + system
+					},
+					{
+						'role': 'user',
+						'content': prompt
+					}
+				]
+			)
+
+			return json.dumps({'response': response.choices[0].message.content, 'done': True}, ensure_ascii=False)
+		else:
+			if base_url != None:
+				resp = requests.post(base_url, json=params)
+			else:
+				resp = requests.post(self.config.LLM_BASE_URL, json=params)
+
+			content = resp.json()['response']
+			return json.dumps({'response': content, 'done': True}, ensure_ascii=False)
 	
 	# stream query requests
-	def squery(self, __prompt: str = None, template: Templater = None, base_url: str = None, **kargs) -> str:
+	def squery(self, __prompt: str = None, template: Templater = None, base_url: str = None, llm_type: str = 'local', token: str = None, **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -143,17 +166,44 @@ class Driver:
 		if system != None:
 			params.update({'system': system})
 
-		if base_url != None:
-			resp = requests.post(base_url, json=params, stream=True)
-		else:
-			resp = requests.post(self.config.LLM_BASE_URL, json=params, stream=True)
+		if llm_type == 'openai':
+			if token != None:
+				openai.api_key = token
+			else:
+				openai.api_key = self.config.OPENAI_TOKEN
 
-		for data in resp.iter_lines():
-			parsed = json.loads(data)
-			yield json.dumps({'response': parsed['response'], 'done': parsed['done']}, ensure_ascii=False)
+			response = openai.chat.completions.create(
+				model="gpt-3.5-turbo-16k",
+				messages=[
+					{
+						'role': 'system',
+						'content': 'Give short answer\n' + system
+					},
+					{
+						'role': 'user',
+						'content': prompt
+					}
+				],
+				stream=True
+			)
+
+			for chunk in response:
+				if chunk.choices[0].delta.content == None:
+					yield json.dumps({'response': '', 'done': True}, ensure_ascii=False)
+				else:
+					yield json.dumps({'response': chunk.choices[0].delta.content, 'done': False}, ensure_ascii=False)
+		else:
+			if base_url != None:
+				resp = requests.post(base_url, json=params, stream=True)
+			else:
+				resp = requests.post(self.config.LLM_BASE_URL, json=params, stream=True)
+
+			for data in resp.iter_lines():
+				parsed = json.loads(data)
+				yield json.dumps({'response': parsed['response'], 'done': parsed['done']}, ensure_ascii=False)
 	
 	# asynchronous query requests
-	async def aquery(self, __prompt: str = None, template: Templater = None, base_url: str = None, async_requests = None, **kargs) -> str:
+	async def aquery(self, __prompt: str = None, template: Templater = None, base_url: str = None, async_requests = None, llm_type: str = 'local', token: str = None, **kargs) -> str:
 		system = None
 		prompt = None
 
@@ -174,10 +224,32 @@ class Driver:
 		if system != None:
 			params.update({'system': system})
 
-		if base_url != None:
-			resp = await async_requests.post(base_url, json=params)
-		else:
-			resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
+		if llm_type == 'openai':
+			if token != None:
+				openai.api_key = token
+			else:
+				openai.api_key = self.config.OPENAI_TOKEN
 
-		content = (await resp.json())['response']
-		return json.dumps({'response': content, 'done': True}, ensure_ascii=False)
+			response = await openai.chat.completions.create(
+				model="gpt-3.5-turbo-16k",
+				messages=[
+					{
+						'role': 'system',
+						'content': 'Give short answer\n' + system
+					},
+					{
+						'role': 'user',
+						'content': prompt
+					}
+				]
+			)
+
+			return json.dumps({'response': response.choices[0].message.content, 'done': True}, ensure_ascii=False)
+		else:
+			if base_url != None:
+				resp = await async_requests.post(base_url, json=params)
+			else:
+				resp = await async_requests.post(self.config.LLM_BASE_URL, json=params)
+
+			content = (await resp.json())['response']
+			return json.dumps({'response': content, 'done': True}, ensure_ascii=False)

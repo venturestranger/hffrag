@@ -9,3 +9,4 @@ class IndexerConfig:
 class DriverConfig:
 	LLM_BASE_URL = 'http://localhost:11434/api/generate'
 	LLM_MODEL = 'mistral:7b-instruct'
+	OPENAI_TOKEN = ''
