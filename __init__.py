@@ -125,7 +125,7 @@ class Driver:
 				messages=[
 					{
 						'role': 'system',
-						'content': 'Give short answer\n' + system
+						'content': system
 					},
 					{
 						'role': 'user',
@@ -177,7 +177,7 @@ class Driver:
 				messages=[
 					{
 						'role': 'system',
-						'content': 'Give short answer\n' + system
+						'content': system
 					},
 					{
 						'role': 'user',
@@ -235,7 +235,7 @@ class Driver:
 				messages=[
 					{
 						'role': 'system',
-						'content': 'Give short answer\n' + system
+						'content': system
 					},
 					{
 						'role': 'user',
