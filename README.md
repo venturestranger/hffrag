@@ -1,6 +1,6 @@
 # HFFRAG - RAG using HF (sentence transformers) and Faiss (similarity search library)
 
-The project implements RAG (Retrieval-Augmented Generation) and introduces several components for indexing documents, querying, finding the most similar ones, generating llm templates and outputs (using `Ollama` and `OpenAI`).
+The project implements RAG (Retrieval-Augmented Generation) and introduces several components for indexing documents, querying, finding the most similar ones, generating llm templates and outputs. The project supports both `Ollama` and `OpenAI` LLM agents.
 
 ### Installation
 
